@@ -6,7 +6,7 @@
 <h2>🖼️ Project Preview</h2>
 
 <p>
-  <img src="https://github.com/FarihaIslam321/Kenakata_E-commerce_Website/blob/main/information/Image/Kenakata.png"
+  <img src="https://github.com/tamimhasan871742/CSE327kenakataEcomarce-site/blob/main/Kenakata.png"
        alt="Project Screenshot" width="800">
 </p>
 
