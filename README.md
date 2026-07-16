@@ -1,7 +1,7 @@
 <h1>🌐 Kenakata E-commerce site</h1>
-<p>MD Tamim Hasan (ID 2232239642)
-Arnab Ghosh (ID 2322019042)
-Nayer Ali Ahsan (ID 2321749642)
+<p>MD Tamim Hasan (ID 2232239642),
+Arnab Ghosh (ID 2322019042),
+Nayer Ali Ahsan (ID 2321749642),
 MD Samiul Hasan Udoy (ID 2322478642)
 </p>
 
