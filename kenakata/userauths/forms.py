@@ -43,24 +43,24 @@ class AddressForm(forms.ModelForm):
         exclude = ['user'] 
 
 
-# class PaymentMethodForm(forms.ModelForm):
-#     class Meta:
-#         model = PaymentMethod
-#         exclude = ['user'] 
+class PaymentMethodForm(forms.ModelForm):
+    class Meta:
+        model = PaymentMethod
+        exclude = ['user'] 
 
 
         
-# class ReviewForm(forms.ModelForm):
-#     product = forms.ModelChoiceField(
-#         queryset=Product.objects.all(),  # or filter to only products the user purchased
-#         empty_label="Select a product",
-#         widget=forms.Select(attrs={'class': 'form-control'})
-#     )
+class ReviewForm(forms.ModelForm):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.all(),  # or filter to only products the user purchased
+        empty_label="Select a product",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 
-#     class Meta:
-#         model = Review
-#         fields = ['product', 'rating', 'comment']
-#         widgets = {
-#             'rating': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
-#             'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-#         }
+    class Meta:
+        model = Review
+        fields = ['product', 'rating', 'comment']
+        widgets = {
+            'rating': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
+            'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

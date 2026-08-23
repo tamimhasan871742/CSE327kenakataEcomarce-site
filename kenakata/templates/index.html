@@ -178,7 +178,7 @@
               <!-- Make the card clickable -->
               <div class="product-link-wrapper" 
                   style="text-decoration:none; color:inherit; display:block; cursor:pointer;" 
-                  onclick="window.location.href='#'">
+                  onclick="window.location.href='{% url 'product_details' product.id %}'">
 
                 <div class="product-image">
                   {% if product.label %}
@@ -221,7 +221,7 @@
                     <div class="d-flex align-items-center gap-2">
 
                       <!-- Wishlist button -->
-                     <form method="post" action="#" style="display:inline;">
+                     <form method="post" action="{% url 'toggle_wishlist' product.id %}" style="display:inline;">
                         {% csrf_token %}
                         <button class="btn p-0" style="border:none; background:none;">
                             <i class="bi bi-heart {% if user.is_authenticated and product in user.wishlist.products.all %}text-danger{% endif %}" style="font-size:20px;"></i>
@@ -229,7 +229,7 @@
                      </form>
 
                       <!-- Add to Cart button -->
-                      <form action="#" method="post" style="display:inline;" 
+                      <form action="{% url 'add_to_cart' product.id %}" method="post" style="display:inline;" 
                             onsubmit="event.stopPropagation();">
                         {% csrf_token %}
                         {% if user.is_authenticated %}

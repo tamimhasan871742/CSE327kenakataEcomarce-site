@@ -133,7 +133,7 @@
           </div>
 
                         <!-- Wishlist Icon -->
-                <a href="#" class="header-action-btn d-none d-md-block">
+                <a href="{% url 'account' %}" class="header-action-btn d-none d-md-block">
                     <i class="bi bi-heart"></i>
                     <span class="badge">
                         {% if wishlist %}{{ wishlist.products.count }}{% else %}0{% endif %}
@@ -141,7 +141,7 @@
                 </a>
 
           <!-- Cart -->
-              <a href="#" class="header-action-btn">
+              <a href="{% url 'cart_detail' %}" class="header-action-btn">
                 <i class="bi bi-cart3"></i>
                 <span class="badge">{{ cart_item_count }}</span>
               </a>
@@ -228,7 +228,7 @@
                     <a href="support.html">Help Center</a>
                   </li>
                   <li>
-                    <a href="#">Order Status</a>
+                    <a href="{% url 'account' %}">Order Status</a>
                   </li>
                   <li>
                     <a href="shiping-info.html">Shipping Info</a>
