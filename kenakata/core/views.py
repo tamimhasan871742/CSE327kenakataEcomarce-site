@@ -9,6 +9,7 @@ from core.models import (
     Cart, CartItem, Wishlist,
     Order, OrderItem, Review
 )
+from core.strategies.shipping import calculate_shipping
 
 
 def home(request):
@@ -64,12 +65,7 @@ def cart_detail(request):
     # Subtotal is already Decimal
     subtotal = sum([item.get_total() for item in cart.items.all()])
 
-    # Get shipping from session (convert to Decimal)
-    shipping = Decimal(str(request.session.get("shipping", "4.99")))
-
-    # Auto free shipping if subtotal > 300
-    if subtotal > Decimal("300"):
-        shipping = Decimal("0")
+    shipping = calculate_shipping(subtotal, request.session.get("shipping"))
 
     tax = (subtotal * Decimal("0.05")).quantize(Decimal("0.01"))
     discount = Decimal("0")

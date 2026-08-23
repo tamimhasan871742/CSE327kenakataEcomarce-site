@@ -131,6 +131,29 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} ({self.user})"
 
+    def save(self, *args, **kwargs):
+        previous_status = None
+        if self.pk:
+            previous_status = Order.objects.filter(pk=self.pk).values_list('status', flat=True).first()
+
+        notify_event = 'order_created' if not self.pk else 'status_changed' if previous_status != self.status else None
+
+        super().save(*args, **kwargs)
+
+        if notify_event:
+            from core.observers.subject import Subject
+            from core.observers.order_observers import (
+                AdminNotificationObserver,
+                CustomerNotificationObserver,
+                VendorNotificationObserver,
+            )
+
+            subject = Subject()
+            subject.attach(CustomerNotificationObserver())
+            subject.attach(VendorNotificationObserver())
+            subject.attach(AdminNotificationObserver())
+            subject.notify(self, notify_event)
+
 
 
 # -------------------------

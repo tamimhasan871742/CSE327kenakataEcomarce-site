@@ -12,6 +12,8 @@ from core.models import (
     Order, OrderItem, Review,
     Address,PaymentMethod
 )
+from core.services.checkout_facade import CheckoutFacade
+from core.strategies.shipping import calculate_shipping
 User = get_user_model()
 
 def register_view(request):
@@ -244,7 +246,7 @@ def checkout(request):
 
     # Calculate totals
     subtotal = sum(item.get_total() for item in cart_items)  # subtotal is Decimal
-    shipping = Decimal(request.session.get("shipping", 0))
+    shipping = calculate_shipping(subtotal, request.session.get("shipping"))
     tax = subtotal * Decimal("0.05")   # FIXED
     discount = Decimal("0")
     grand_total = subtotal + shipping + tax - discount
@@ -273,44 +275,14 @@ def checkout(request):
 @login_required
 def place_order(request):
     if request.method == "POST":
-        cart = Cart.objects.filter(user=request.user).first()
+        payment_method = request.POST.get("payment-method", "Card")
+        facade = CheckoutFacade()
+        result = facade.process_checkout(user=request.user, request=request, payment_method=payment_method)
 
-        if not cart or not cart.items.exists():
-            messages.error(request, "Your cart is empty!")
+        if not result.get("success"):
+            messages.error(request, result.get("message", "Unable to place order."))
             return redirect("checkout")
 
-        # Get user's default address
-        default_address = Address.objects.filter(user=request.user, is_default=True).first()
-        if not default_address:
-            messages.error(request, "Please add a default shipping address.")
-            return redirect("checkout")
-
-        # Totals
-        subtotal = sum(item.get_total() for item in cart.items.all())
-        shipping = Decimal(request.session.get("shipping", 0))
-        tax = subtotal * Decimal("0.05")
-        discount = Decimal("0")
-        grand_total = subtotal + shipping + tax - discount
-
-        # Create order (must match your model fields!)
-        order = Order.objects.create(
-            user=request.user,
-            total_amount=grand_total,
-        )
-
-        # Create order items
-        for item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.quantity,
-                price=item.product.price,
-            )
-
-        # Empty cart
-        cart.items.all().delete()
-
-        messages.success(request, "🎉 Your order has been placed successfully!")
         return redirect("order_success")
 
     return redirect("checkout")
