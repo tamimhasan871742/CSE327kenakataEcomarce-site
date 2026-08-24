@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from core.builders.order_builder import OrderBuilder
 from core.models import Address, Cart, CartItem, Category, Product, Vendor
-from core.payments.factory import PaymentFactory
+from core.payments.factory import FactoryRegistry, PaymentFactory
 from core.strategies.shipping import StandardShippingStrategy
 
 
@@ -68,10 +68,15 @@ class DesignPatternIntegrationTests(TestCase):
         self.assertEqual(order.items.first().product, self.product)
 
     def test_payment_factory_uses_singleton_registry(self):
-        factory_one = PaymentFactory()
-        factory_two = PaymentFactory.get_instance()
-        self.assertIs(factory_one, factory_two)
+        registry_one = FactoryRegistry.get_instance()
+        registry_two = FactoryRegistry.get_instance()
 
-        processor = factory_one.create('Card')
+        self.assertIs(registry_one, registry_two)
+
+        factory = registry_one.get_factory('Card')
+        self.assertIsInstance(factory, PaymentFactory)
+
+        processor = factory.create_payment()
+
         self.assertTrue(hasattr(processor, 'pay'))
         self.assertTrue(processor.pay(Decimal('100.00')))
