@@ -19,7 +19,7 @@ class StandardShippingStrategy(ShippingStrategy):
 class ExpressShippingStrategy(ShippingStrategy):
     def calculate(self, subtotal: Decimal) -> Decimal:
         subtotal = Decimal(subtotal)
-        if subtotal > Decimal('300'):
+        if subtotal > Decimal('500'):
             return Decimal('0')
         return Decimal('9.99')
 
@@ -50,6 +50,4 @@ def calculate_shipping(subtotal, shipping_value=None, strategy_name='standard'):
     else:
         shipping = get_shipping_strategy(strategy_name).calculate(subtotal_decimal)
 
-    if subtotal_decimal > Decimal('300'):
-        return Decimal('0')
     return shipping
