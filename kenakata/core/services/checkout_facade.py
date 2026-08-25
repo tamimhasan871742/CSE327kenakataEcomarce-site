@@ -45,8 +45,6 @@ class CheckoutFacade:
             .build()
         )
 
-        # Order.save() dispatches the application observers; this subject only
-        # carries the request-scoped success message.
         subject = Subject()
         subject.attach(DjangoMessageObserver(request))
         subject.notify(order, 'order_created')
