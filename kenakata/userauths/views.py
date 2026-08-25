@@ -24,15 +24,15 @@ def register_view(request):
             if User.objects.filter(email=email).exists():
                 messages.error(request, "Email is already registered. Please use a different email.")
             else:
-                # Create user but don't commit yet
+               
                 user = form.save(commit=False)
-                user.is_staff = False        # ensure normal user
-                user.is_superuser = False    # ensure normal user
-                user.save()                  # save to DB
+                user.is_staff = False        
+                user.is_superuser = False   
+                user.save()                  
                 messages.success(request, "Account created successfully! You can now log in.")
-                return redirect("home")  # Change to login page URL if needed
+                return redirect("home")  
         else:
-            # Collect and display all form errors
+            
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
@@ -47,16 +47,16 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Authenticate user using email as username
+      
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
-            # Check if user is admin/staff
+            
             if user.is_staff or user.is_superuser:
                 messages.error(request, "Admin users cannot log in here. Please use the admin panel.")
-                return redirect("login")  # redirect back to login page
+                return redirect("login") 
 
-            # Normal user login
+            
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
             return redirect("home")
@@ -70,7 +70,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out successfully.")
-    return redirect("login")   # redirect to login page (change if needed)
+    return redirect("login")   
 
 
 
@@ -114,7 +114,7 @@ def add_address(request):
         form = AddressForm(request.POST)
         if form.is_valid():
             address = form.save(commit=False)
-            address.user = request.user  # Assign the logged-in user
+            address.user = request.user  
             address.save()
             messages.success(request, 'Address added successfully!')
             return redirect('account')
@@ -128,7 +128,7 @@ def edit_address(request, address_id):
     if request.method == 'POST':
         form = AddressForm(request.POST, instance=address)
         if form.is_valid():
-            form.save()  # Saves the existing instance
+            form.save()  
             messages.success(request, 'Address updated successfully!')
             return redirect('account')
     else:
@@ -148,7 +148,7 @@ def add_review(request):
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
-            review.user = request.user  # assign current logged-in user
+            review.user = request.user 
             review.save()
             messages.success(request, 'Review added successfully!')
             return redirect('account')
@@ -171,12 +171,12 @@ def add_payment_method(request):
         form = PaymentMethodForm(request.POST)
         if form.is_valid():
             payment = form.save(commit=False)
-            payment.user = request.user  # Assign logged-in user
+            payment.user = request.user  
             payment.save()
             messages.success(request, 'Payment method added successfully!')
             return redirect('account')
         else:
-            # Optional: show errors if form is invalid
+            
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
@@ -207,7 +207,7 @@ def remove_wishlist(request, product_id):
         return redirect('account')
 
     product = get_object_or_404(Product, id=product_id)
-    # remove product if exists in wishlist
+    
     wishlist.products.remove(product)
     messages.success(request, f"Removed {product.title} from your wishlist.")
     return redirect('account') 
@@ -216,7 +216,7 @@ def remove_wishlist(request, product_id):
 @login_required
 def toggle_wishlist(request, product_id):
     if request.method != "POST":
-        return redirect('home')  # redirect if not POST
+        return redirect('home')  
 
     product = get_object_or_404(Product, id=product_id)
     wishlist, created = Wishlist.objects.get_or_create(user=request.user)
@@ -228,7 +228,7 @@ def toggle_wishlist(request, product_id):
         wishlist.products.add(product)
         messages.success(request, f"Added {product.title} to your wishlist.")
 
-    # Redirect back to the same page
+    
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 
@@ -236,7 +236,7 @@ def toggle_wishlist(request, product_id):
 @login_required
 def checkout(request):
 
-    # Get user cart
+    
     try:
         cart = Cart.objects.get(user=request.user)
     except Cart.DoesNotExist:
@@ -244,14 +244,14 @@ def checkout(request):
 
     cart_items = cart.items.all() if cart else []
 
-    # Calculate totals
+    
     subtotal = sum(item.get_total() for item in cart_items)  # subtotal is Decimal
     shipping = calculate_shipping(subtotal, request.session.get("shipping"))
     tax = subtotal * Decimal("0.05")   # FIXED
     discount = Decimal("0")
     grand_total = subtotal + shipping + tax - discount
 
-    # Get Default Address
+ 
     default_address = Address.objects.filter(user=request.user, is_default=True).first()
 
     context = {
@@ -298,10 +298,10 @@ def buy_now(request, product_id):
         product = get_object_or_404(Product, id=product_id)
         quantity = int(request.POST.get("quantity", 1))
 
-        # Get or create cart
+       
         cart, _ = Cart.objects.get_or_create(user=request.user)
 
-        # Add product to cart
+       
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if created:
             cart_item.quantity = quantity
@@ -309,7 +309,7 @@ def buy_now(request, product_id):
             cart_item.quantity += quantity
         cart_item.save()
 
-        # Store flag in session to go directly to checkout
+        
         request.session['buy_now'] = True
 
         return redirect('checkout')
