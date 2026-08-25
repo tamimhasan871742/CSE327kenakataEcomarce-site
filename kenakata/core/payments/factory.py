@@ -14,9 +14,6 @@ from core.payments.processors import (
 )
 
 
-# ============================================================
-# Abstract Factory
-# ============================================================
 
 class PaymentFactory(ABC):
     """
@@ -54,9 +51,7 @@ class PaymentFactory(ABC):
         return FactoryRegistry.get_instance().available_methods()
 
 
-# ============================================================
-# Concrete Factories
-# ============================================================
+
 
 class CardPaymentFactory(PaymentFactory):
     """
@@ -98,9 +93,7 @@ class CashOnDeliveryPaymentFactory(PaymentFactory):
         return CashOnDeliveryPaymentAdapter(provider)
 
 
-# ============================================================
-# Singleton Factory Registry
-# ============================================================
+
 
 class FactoryRegistry:
     """
@@ -158,17 +151,17 @@ class FactoryRegistry:
         nagad_factory = NagadPaymentFactory()
         cod_factory = CashOnDeliveryPaymentFactory()
 
-        # Card-based payments
+        
         self.register_factory('Card', card_factory)
         self.register_factory('Credit / Debit Card', card_factory)
         self.register_factory('PayPal', card_factory)
         self.register_factory('Apple Pay', card_factory)
 
-        # Mobile financial services
+       
         self.register_factory('bKash', bkash_factory)
         self.register_factory('Nagad', nagad_factory)
 
-        # Cash payment
+      
         self.register_factory('Cash on Delivery', cod_factory)
    
        
